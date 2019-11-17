@@ -30,7 +30,7 @@
  *left and right side is wall
  *and the below line is ground
  */
-char puyo_table[13][10];
+char puyo_table[13][10];//floor = wall |
 
 static struct result{
 	char name[30];
@@ -89,10 +89,18 @@ void blue(){
 void reset () {
   printf("\033[0m");
 }
-
+void color(int c){
+	switch(c){
+		case 0: red();break;
+		case 1: yellow();break;
+		case 2: purple();break;
+		case 3: green(); break;
+		case 4: blue(); break;
+	}
+}
 int display_menu(void);
-int init_table(void);
-int display_table(void);
+void init_table(void);
+void display_table(void);
 int game_start(void);
 void refresh(int);
 int move_block(int);
@@ -213,6 +221,46 @@ int game_start(void){
 	return 0;
 }
 
+void display_table(void){
+	system("clear");
+
+	printf("\n\n Next Block\n");
+	printf("\n");
+	color(next_A_block_num);
+	printf("@\n");
+	color(next_B_block_num);
+	printf("@\n");
+	reset();
+
+	for(int i = 0;i<13;i++){
+		for(int j = 0;j<10;j++){
+			if(puyo_table[i][j] == -1) printf("|");
+			else if(puyo_table[i][j] == -2)printf("-");
+			else if(puyo_table[i][j] == 10) printf(" ");
+			else{
+				color(puyo_table[i][j]);
+				printf("@");
+			}
+		}
+		printf("\n");
+	}
+}
+
+void init_table(void){
+	for(int i = 0;i<13;i++){
+		for(int j = 1;j<9;j++){
+			puyo_table[i][j] = 10;
+		}
+	}
+	for(int i = 0;i<13;i++){
+		puyo_table[i][0] = -1;
+		puyo_table[i][9] = -1;
+	}
+	for(int i = 1;i<9;i++){
+		puyo_table[12][i] = -2;
+	}
+	return;
+}
 int getch(void){//fast character input
              char   ch;
              int   error;

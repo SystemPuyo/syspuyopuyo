@@ -8,6 +8,7 @@
 #include<sys/ioctl.h>
 #include<sys/types.h>
 #include<time.h>
+#include<stdbool.h>
 
 #define CCHAR 0
 
@@ -65,6 +66,8 @@ int B_position_y = 0;
 int game = GAME_END;
 int best_point = 0;
 long point = 0;
+int xTable[4] = {0,1,0,-1};
+int yTable[4] = {1,0,-1,0};
 
 
 /*function that set colors*/
@@ -105,11 +108,12 @@ int game_start(void);
 void refresh(int);
 int move_block(int);
 int drop(void);
-int collision_test(int);
+bool isNotColide(int);
 int check_drop(void);//chekc if the destruction can be done
 int print_result(void);
 int search_result(void);
 int getch(void);//fast character input
+
 
 int main(void){
 	int menu = 1;
@@ -246,6 +250,33 @@ void display_table(void){
 	}
 }
 
+void refresh(int signum){
+	static int downcount = 0;
+	static int setcount = 0;
+	static long speedcount = 0;
+	static int countrange = 5;
+	static bool isFirst = true;
+
+	char ch;
+
+	srand((unsigned)time(NULL));
+
+	if(isFirst){
+		A_block_num = rand()%5;
+		B_block_num = rand()%5;
+		isFirst = false;
+	}
+
+	printf("\n score : %ld | speed : %d | highscore : %d",point,countrange,best_point);
+
+	display_table();
+	check_drop();
+
+	printf("\n game GiveUp : P");
+
+	//original cone number 433
+}
+
 void init_table(void){
 	for(int i = 0;i<13;i++){
 		for(int j = 1;j<9;j++){
@@ -261,6 +292,41 @@ void init_table(void){
 	}
 	return;
 }
+
+bool isNotColide(int command){
+	int tempAx, tempAy, tempBx, tempBy;
+	int oldAx, oldAy, oldBx, oldBy;
+	int tempState;
+	char tempTable[13][10];
+	oldAx = tempAx = A_position_x;
+	oldAy = tempAy = A_position_y;
+	oldBx = tempBx = B_position_x;
+	oldBy = tempBy = B_position_y;
+	tempState = rotate_state;
+
+	switch(command){
+		case LEFT: tempAx--; tempBx--;break;
+		case RIGHT:tempAx++;tempBx++;break;
+		case DOWN: tempAy++;tempBy++;break;
+		case LROTATE:if(tempState == 0)tempState = 3;
+				     else tempState--;
+				     break;
+		case RROTATE:tempState = (tempState+1)%4;break;
+		default:printf("swomething has wrong in isNotColide");
+	}
+
+	for(int i = 0;i<13;i++){
+		for(int j  = 0;j<10;j++){
+			tempTable[i][j] = puyo_table[i][j];
+		}
+	}
+	tempBx = tempAx + xTable[tempState];
+	tempBy = tempAy + yTable[tempState];
+
+	if(puyo_table[tempAy][tempAx] + puyo_table[tempBy][tempBx] == 20) return true;
+	return false;
+}
+
 int getch(void){//fast character input
              char   ch;
              int   error;

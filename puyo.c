@@ -107,11 +107,10 @@ void display_table(void);
 int game_start(void);
 void refresh(int);
 int move_block(int);
-int drop(void);
 bool isNotColide(int);
 int check_drop(void);//chekc if the destruction can be done
-int print_result(void);
-int search_result(void);
+void print_result(void);
+void search_result(void);
 int getch(void);//fast character input
 
 
@@ -426,3 +425,90 @@ int getch(void){//fast character input
 
             return (error == 1 ? (int) ch : -1 );
 }
+
+void search_result(void){
+	FILE *fp = NULL;
+	char name[30];
+	char ch;
+	bool isFound = 0;
+
+	fp = fopen("result","rb");
+
+	if(fp == NULL){
+		printf("problem opening result file");
+		return;
+	}
+
+	system("clear");
+
+	printf("\n\n\t\t Text Puyo Puyo");
+	printf("\n\t\t\t\t Game record\n\n");
+	printf("\n\t\tname\t\tscore\tdate\t\ttime");
+
+	while(1){
+		fread(&temp_result,sizeof(struct result),1,fp);
+		if(!feof(fp)){
+			if(!strcmp(temp_result.name,name)){
+				if(!strcmp(temp_result.name,name)){
+					isFound = true;
+					printf("\n\t=======================================================");
+					printf("\n\t\t%s\n\t\t\t\t%ld\t%d. %d. %d.  |  %d : %d\n",
+						       	temp_result.name, temp_result.point,
+						       	temp_result.year, temp_result.month,
+						       	temp_result.day, temp_result.hour,
+						       	temp_result.min);
+				}
+			}
+		}
+		else break;
+	}
+
+	if(isFound == false)
+		printf("\n\n\n\t\tThere is no such name");
+
+	printf("\n\n\n\t\tReturn to Game Menu : M");
+	while(1){
+		ch = getch();
+		if(ch == 77 || ch == 109) break;
+	}
+}
+
+void print_result(void)
+{ 
+    FILE *fp = NULL; 
+    char ch = 1 ;
+ 
+    fp = fopen("result", "rb"); 
+ 
+    if(fp == NULL) 
+        return;
+
+   system("clear"); 
+
+   printf("\n\t\t\t\tText Puyo Puyo"); 
+   printf("\n\t\t\t\t Game record\n\n"); 
+   printf("\n\t\tName\t\tScore\tDate\t\t Tiie"); 
+
+   while(1) { 
+              fread(&temp_result, sizeof(struct result), 1, fp); 
+              if(!feof(fp)){ 
+	                     printf("\n\t========================================================"); 
+	                     printf("\n\t\t%s\n\t\t\t\t%ld\t %d. %d. %d.  |  %d : %d\n", temp_result.name, 
+					     temp_result.point, temp_result.year, temp_result.month,
+					     temp_result.day, temp_result.hour, temp_result.min);
+	                 } 
+              else break;
+      } 
+
+   fclose(fp); 
+
+   printf("\n\n\tReturn to Game Menu : M"); 
+   while(1) 
+   { 
+          ch = getch(); 
+          if(ch == 77 || ch == 109)
+              break; 
+      } 
+
+} 
+ 

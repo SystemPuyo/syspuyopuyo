@@ -251,6 +251,9 @@ void display_table(void){
 }
 
 void refresh(int signum){
+	if(signum != SIGVTALRM){
+		printf("I don't know what to do\n");
+	}
 	static int downcount = 0;
 	static int setcount = 0;
 	static long speedcount = 0;
@@ -274,7 +277,71 @@ void refresh(int signum){
 
 	printf("\n game GiveUp : P");
 
-	//original cone number 433
+	if(downcount == countrange - 1){
+		point += 1;
+		move_block(DOWN);
+	}
+
+	if(speedcount == 499){
+		if(countrange != 1)
+			countrange--;
+	}
+
+	downcount++;
+	downcount %= countrange;
+	speedcount++;
+	speedcount %= 500;
+
+	/*
+	 * game over condition test here
+	 */
+
+	if(isNotColide(DOWN)){
+		if(setcount == 9){
+			A_block_num = next_A_block_num;
+			B_block_num = next_B_block_num;
+			next_A_block_num = rand()%5;
+			next_B_block_num = rand()%5;
+			rotate_state = 0;
+			A_position_x = 3;
+			A_position_y = 0;
+			B_position_x = 3;
+			B_position_y = 1;
+		}
+		setcount++;
+		setcount %= 10;
+	}
+
+	ch = getch();
+	if(ch == -32)
+		ch = getch();
+	switch(ch){
+		case 75:
+			move_block(LEFT);
+			break;
+		case 77:
+			move_block(RIGHT);
+			break;
+		case 80:
+			move_block(DOWN);
+			break;
+		case 90:
+		case 112:
+			move_block(LROTATE);
+			break;
+		case 88:
+		case 120:
+			move_block(RROTATE);
+			break;
+		case 'q':
+		case 'Q': downcount = 0;
+			  setcount = 0;
+			  countrange = 5;
+			  isFirst = 0;
+			  game = GAME_END;
+			  break;
+		default: break;
+	}
 }
 
 void init_table(void){

@@ -274,7 +274,7 @@ void refresh(int signum){
 	display_table();
 	check_drop();
 
-	printf("\n game GiveUp : P");
+	printf("\n game GiveUp : Q");
 
 	if(downcount == countrange - 1){
 		point += 1;

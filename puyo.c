@@ -66,8 +66,8 @@ int B_position_y = 0;
 int game = GAME_END;
 int best_point = 0;
 long point = 0;
-int xTable[4] = {0,1,0,-1};
-int yTable[4] = {1,0,-1,0};
+int xTable[4] = {0,1,0,-1};//to calculate x cordinate of B
+int yTable[4] = {1,0,-1,0};//to calculate y cordinate of B
 
 
 /*function that set colors*/
@@ -106,7 +106,7 @@ void init_table(void);
 void display_table(void);
 int game_start(void);
 void refresh(int);
-int move_block(int);
+void move_block(int);
 bool isNotColide(int);
 int check_drop(void);//chekc if the destruction can be done
 void print_result(void);
@@ -512,3 +512,29 @@ void print_result(void)
 
 } 
  
+void move_block(int command){
+	if(isNotColide(command)){
+		switch(command){
+			case LEFT : A_position_x--;
+				    B_position_x--;
+			    	    break;
+			case RIGHT:
+			   	 A_position_x++;
+			    	 B_position_x++;
+			    	 break;
+			case DOWN:
+			   	 A_position_y++;
+			    	 B_position_y++;
+			   	 break;
+			case RROTATE:
+				 rotate_state = (rotate_state + 1) % 4;
+			    	B_position_x = A_position_x + xTable[rotate_state];
+			    	B_position_y = A_position_y + yTable[rotate_state];
+			case LROTATE:
+				rotate_state = rotate_state == 0 ? 3 : rotate_state - 1;
+				B_position_x = A_position_x + xTable[rotate_state];
+				B_position_y = A_position_y + yTable[rotate_state];
+		}
+
+	}
+}

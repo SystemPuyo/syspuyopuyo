@@ -139,19 +139,25 @@ int main(void) {
 
 int display_menu(void) {
 	int menu = 0;
+	char input[100] = {'\0'}; 
 	while (1) {
 		system("clear");
-		printf("\n\t\t\t\t Text Puyo Puyo");
-		printf("\n\t\t\t===================");
-		printf("\n\t\t\t\t GAME MENU\t\n");
-		printf("\n\t\t\t===================");
-		printf("\n\t\t\t=\t1) Start Game\t\t=");
-		printf("\n\t\t\t=\t2) Search Record\t\t=");
-		printf("\n\t\t\t=\t3) Display Record\t\t=");
-		printf("\n\t\t\t=\t4) EXIT\t\t=");
-		printf("\n\t\t\t===================");
-		scanf("%d", &menu);
-		if (menu<1 || menu > 4) {
+		printf("\n\t\t\t\t%19s", "Text Puyo Puyo");
+		printf("\n\t\t\t=========================================");
+		printf("\n\t\t\t\t%16s\n", "GAME MENU");
+		printf("\n\t\t\t=========================================");
+		printf("\n\t\t\t=\t1) %-14s\t\t=", "Start Game");
+		printf("\n\t\t\t=\t2) %-14s\t\t=", "Search Record");
+		printf("\n\t\t\t=\t3) %-14s\t\t=", "Display Record");
+		printf("\n\t\t\t=\t4) %-14s\t\t=", "EXIT");
+		printf("\n\t\t\t=========================================");
+		printf("\n\t\t\t=> ");
+		scanf("%s", input);
+		menu = atoi(input); // to handle some wrong input
+		if (strlen(input) != 1){ // some wrong input(not int) ex) abcd, 1abcd, 2!af43 ...
+			continue;
+		}
+		if (menu < 1 || menu > 4){ // int input, but not in menu number
 			continue;
 		}
 		else {
@@ -548,7 +554,7 @@ void move_block(int command) {
 }
 
 void drop_block(void) {
-	if (isNotcollide(DOWN)) { // 1. new block should be moved down?
+	if (!isNotcollide(DOWN)) { // 1. new block should be moved down?
 		move_block(DOWN);
 	}
 	// 2. if block destructed, upper block should be moved down?

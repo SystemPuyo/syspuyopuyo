@@ -171,7 +171,7 @@ int game_start(void) {
 	if (game == GAME_START) {
 		init_table();
 
-		signal(SIGVTALRM, refresh);
+		signal(SIGVTALRM, refresh);//set refresh function as handler so this program can be animated
 		//configure the timer to expire after 1 us
 		timer.it_value.tv_sec = 0;
 		timer.it_value.tv_usec = 1;
@@ -182,7 +182,7 @@ int game_start(void) {
 
 		setitimer(ITIMER_VIRTUAL, &timer, NULL);
 		while (1) {
-			if (game == GAME_END) {
+			if (game == GAME_END) {//if game end, save data
 				timer.it_value.tv_sec = 0;
 				timer.it_value.tv_usec = 0;
 				timer.it_value.tv_sec = 0;
@@ -206,7 +206,7 @@ int game_start(void) {
 				temp_result.hour = t->tm_hour;
 				temp_result.min = t->tm_min;
 
-				fp = fopen("result", "ab");
+				fp = fopen("result", "ab");//open file to write result
 				fseek(fp, 1, SEEK_END);
 				fwrite(&temp_result, sizeof(struct result), 1, fp);
 				fclose(fp);
@@ -237,9 +237,9 @@ void display_table(void) {
 
 	for (int i = 0; i<13; i++) {
 		for (int j = 0; j<10; j++) {
-			if (puyo_table[i][j] == -1) printf("|");
-			else if (puyo_table[i][j] == -2)printf("-");
-			else if (puyo_table[i][j] == 10) printf(" ");
+			if (puyo_table[i][j] == -1) printf("|");//left or right wall
+			else if (puyo_table[i][j] == -2)printf("-");//the floor
+			else if (puyo_table[i][j] == 10) printf(" ");//the blank
 			else {
 				color(puyo_table[i][j]);
 				printf("@");
@@ -250,7 +250,7 @@ void display_table(void) {
 }
 
 void refresh(int signum) {
-	if (signum != SIGVTALRM) {
+	if (signum != SIGVTALRM) {//to supress warning
 		printf("I don't know what to do\n");
 	}
 	static int downcount = 0;
@@ -299,7 +299,7 @@ void refresh(int signum) {
 		if (setcount == 9) {
 			A_block_num = next_A_block_num;
 			B_block_num = next_B_block_num;
-			next_A_block_num = rand() % 5;
+			next_A_block_num = rand() % 5;//set the next blocks
 			next_B_block_num = rand() % 5;
 			rotate_state = 0;
 			A_position_x = 3;
@@ -312,8 +312,8 @@ void refresh(int signum) {
 	}
 
 	ch = getch();
-	if (ch == -32)
-		ch = getch();
+	if (ch == -32)//special character has 2 byte length
+		ch = getch();//to handle those character we should get input twice
 	switch (ch) {
 	case 75:
 		move_block(LEFT);
@@ -345,15 +345,15 @@ void refresh(int signum) {
 
 void init_table(void) {
 	for (int i = 0; i<13; i++) {
-		for (int j = 1; j<9; j++) {
+		for (int j = 1; j<9; j++) {//blank
 			puyo_table[i][j] = 10;
 		}
 	}
-	for (int i = 0; i<13; i++) {
+	for (int i = 0; i<13; i++) {//left and right side wall
 		puyo_table[i][0] = -1;
 		puyo_table[i][9] = -1;
 	}
-	for (int i = 1; i<9; i++) {
+	for (int i = 1; i<9; i++) {//the floor
 		puyo_table[12][i] = -2;
 	}
 	return;
@@ -385,7 +385,11 @@ bool isNotcollide(int command) {
 		for (int j = 0; j<10; j++) {
 			if((i == oldAy && j == oldAx)|| (i == oldBy && j == oldBx) ){
 				tempTable[i][j] = 10;//making the pre block position empty
-				continue;
+				continue;/*
+					the pre position of the falling block should not be considered
+					cause the next position of falling block will be changed
+					and it has no collidance with its pre-position
+					*/
 			}
 			tempTable[i][j] = puyo_table[i][j];
 		}

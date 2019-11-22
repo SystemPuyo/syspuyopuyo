@@ -383,13 +383,17 @@ bool isNotcollide(int command) {
 
 	for (int i = 0; i<13; i++) {
 		for (int j = 0; j<10; j++) {
+			if((i == oldAy && j == oldAx)|| (i == oldBy && j == oldBx) ){
+				tempTable[i][j] = 10;//making the pre block position empty
+				continue;
+			}
 			tempTable[i][j] = puyo_table[i][j];
 		}
 	}
 	tempBx = tempAx + xTable[tempState];
 	tempBy = tempAy + yTable[tempState];
 
-	if (puyo_table[tempAy][tempAx] + puyo_table[tempBy][tempBx] == 20) return true;
+	if (tempTable[tempAy][tempAx] + tempTable[tempBy][tempBx] == 20) return true;
 	return false;
 }
 
